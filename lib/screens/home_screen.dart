@@ -1,153 +1,77 @@
 import 'package:flutter/material.dart';
+import 'question_screen.dart';
 
-import '../data/questions.dart';
-import '../models/question.dart';
-import 'question_list_screen.dart';
-
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _openList(String category, {Difficulty? difficulty}) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => QuestionListScreen(
-          category: category,
-          initialDifficulty: difficulty,
-        ),
-      ),
-    );
-  }
-
-  void _search() {
-    final text = _searchController.text.trim();
-
-    if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Type a question type to search.')),
-      );
-      return;
-    }
-
-    final matches = categories
-        .where((c) => c.toLowerCase().contains(text.toLowerCase()))
-        .toList();
-
-    if (matches.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No category matches "$text".')),
-      );
-    } else {
-      _openList(matches.first);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
+    final theme = Theme.of(context);
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Main menu')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Search bar
-          TextField(
-            controller: _searchController,
-            textInputAction: TextInputAction.search,
-            onSubmitted: (_) => _search(),
-            decoration: InputDecoration(
-              hintText: 'Search (e.g. inference)',
-              filled: true,
-              fillColor: Colors.grey.shade200,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.search),
-                onPressed: _search,
+      appBar: AppBar(
+        title: const Text('SAT R&W Practice'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Welcome back!',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
               ),
             ),
-          ),
-          const SizedBox(height: 24),
-
-          // Categories
-          const Text(
-            'CATEGORIES',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 2.4,
-            children: [
-              for (final c in categories)
-                Material(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(24),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(24),
-                    onTap: () => _openList(c),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(
-                          c,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Study plans
-          const Text(
-            'STUDY PLANS',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          for (final plan in studyPlans)
+            const SizedBox(height: 8),
+            const Text('Select a module to start practicing:'),
+            const SizedBox(height: 24),
             Card(
-              color: Colors.grey.shade100,
+              color: theme.colorScheme.primary.withOpacity(0.1),
               elevation: 0,
               child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                title: Text(
-                  plan.title,
-                  style: TextStyle(
-                    color: scheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text('${plan.category}  |  ${plan.subtitle}'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () =>
-                    _openList(plan.category, difficulty: plan.difficulty),
+                leading: Icon(Icons.menu_book, color: theme.colorScheme.primary),
+                title: const Text('Reading Practice'),
+                subtitle: const Text('Craft, Structure, & Information'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QuestionScreen(title: 'Reading Practice'),
+                    ),
+                  );
+                },
               ),
             ),
-        ],
+            const SizedBox(height: 12),
+            Card(
+              color: theme.colorScheme.secondary.withOpacity(0.1),
+              elevation: 0,
+              child: ListTile(
+                leading: Icon(Icons.edit_note, color: theme.colorScheme.secondary),
+                title: const Text('Writing & Language'),
+                subtitle: const Text('Standard English Conventions'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QuestionScreen(title: 'Writing & Language'),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
